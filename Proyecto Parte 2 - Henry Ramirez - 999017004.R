@@ -234,7 +234,7 @@ rm(data_2024, data_2023, data_2022, data_2021, data_2020,data_2019, data_2018, d
 
 
 #---------------------------------------------------------------------------
-#-------------PREDICCÓN POR MEDIO DE ARBOLES DE DESICIÓN--------------------
+#-------------PREDICCÓN POR MEDIO DE ARBOLES DE DECISIÓN--------------------
 #---------------------------------------------------------------------------
 
 # Nota general:
@@ -363,5 +363,267 @@ result_arb_4
 
 
 
+#---------------------------------------------------------------------------
+#----------------PREDICCÓN POR MEDIO DE RANDOM FFOREST----------------------
+#---------------------------------------------------------------------------
+
+# Nota general:
+# 1. Cada predicción (Predicción 1, ..., Predicción 5) está separado y puede ejecutarse de forma individual.
+#    Esto permite visualizar y analizar los resultados de cada patrón por separado.
 
 
+
+#Predicción 1: Predicción de accidentes por región en temporada de lluvia
+data_rf_1 <- subset(data_completa, (mes_ocu %in% c(6,7,8,9,10)) & depto_ocu<=22 & hora_ocu<=24 & marca_veh<999 & tipo_eve<=8 & color_veh<=17)
+
+#  segmentacion po region
+data_rf_1$depto_region <- ifelse(data_rf_1$depto_ocu %in% c(1), 1,   # Metropolitana
+                          ifelse(data_rf_1$depto_ocu %in% c(16,17), 2,  # Norte
+                          ifelse(data_rf_1$depto_ocu %in% c(18,19,20,21,22), 3,  # Oriente
+                          ifelse(data_rf_1$depto_ocu %in% c(7,8,9,12,13,14), 4,  # Occidente
+                          ifelse(data_rf_1$depto_ocu %in% c(5,6,10,11), 5,  # Costa Sur
+                          ifelse(data_rf_1$depto_ocu %in% c(2,3,4,15), 6,  # Centro
+                          0 )))))) #Otro
+
+
+data_rf_1<-data_rf_1[,c("depto_region","hora_ocu","marca_veh","color_veh","tipo_eve")]
+
+data_rf_1$depto_region<-as.factor(data_rf_1$depto_region)
+data_rf_1<-na.omit(data_rf_1)
+set.seed(100)
+
+
+data_rf_1<-data_rf_1[sample(1:nrow(data_rf_1)),]
+index_1 <- sample(1:nrow(data_rf_1), 0.90*nrow(data_rf_1))
+train_1<- data_rf_1[index_1,]
+test_1<-data_rf_1[-index_1,]
+
+
+bosque_1 <- randomForest(depto_region ~ 
+                          hora_ocu +
+                         marca_veh+
+                          color_veh +
+                         tipo_eve,
+                         data = train_1, 
+                         ntree = 500,
+                         mtry = 4
+)
+
+prueba_1 <- predict(bosque_1,test_1) 
+matriz_1 <- table(test_1$depto_region,prueba_1)
+
+#  Verificamos que tan preciso es el arbol
+pre_1 <- sum(diag(matriz_1))/sum(matriz_1)
+pre_1
+
+#  Creamos un datafram epara predceir su valor
+persona_rf_1 <- data.frame( 
+  hora_ocu = c(12),     
+  marca_veh = c(69) ,   # 69--> Marca Toyota 
+  color_veh = c(1),     # 4-->  Color Gris
+  tipo_eve = c(2)       # 2--> Choque
+)
+
+#  Predecimos los valores
+result_rf_1<- predict(bosque_1,persona_rf_1,type="prob")
+result_rf_1
+
+
+#  Grafica
+plot(bosque_1 ,main='Predicción de hechos de transito por región en temporada de lluvia') 
+
+
+
+
+
+
+
+
+
+
+
+
+
+#Predicción 2:  Hechos de tránsito con vehículos de modelo reciente (2020 - 2029) 
+data_rf_2 <- subset(data_completa, g_modelo_veh == 6)
+
+
+data_rf_2<-data_rf_2[,c("tipo_eve","hora_ocu","tipo_veh","marca_veh","depto_ocu")]
+
+data_rf_2$tipo_eve<-as.factor(data_rf_2$tipo_eve)
+data_rf_2<-na.omit(data_rf_2)
+set.seed(100)
+
+
+data_rf_2<-data_rf_2[sample(1:nrow(data_rf_2)),]
+index_2 <- sample(1:nrow(data_rf_2), 0.90*nrow(data_rf_2))
+train_2<- data_rf_2[index_2,]
+test_2<-data_rf_2[-index_2,]
+
+
+bosque_2 <- randomForest(tipo_eve ~ 
+                           hora_ocu +
+                           marca_veh+
+                           tipo_veh +
+                           depto_ocu,
+                         data = train_2, 
+                         ntree = 500,
+                         mtry = 4
+)
+
+prueba_2 <- predict(bosque_2,test_2) 
+matriz_2 <- table(test_2$tipo_eve,prueba_2)
+
+#  Verificamos que tan preciso es el arbol
+pre_2 <- sum(diag(matriz_2))/sum(matriz_2)
+pre_2
+
+#  Creamos un datafram epara predceir su valor
+persona_rf_2 <- data.frame( 
+  hora_ocu = c(20),     
+  marca_veh = c(28) ,   # 69--> Marca Hyundai 
+  tipo_veh = c(1),     # 1-->  Automovil
+  depto_ocu = c(9)       # 9--> Quetzaltenango
+)
+
+#  Predecimos los valores
+result_rf_2<- predict(bosque_2,persona_rf_2,type="prob")
+result_rf_2
+
+
+#  Grafica
+plot(bosque_2 ,main='Predicción de incidentes con vehículos 2020-2029') 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#Predicción 3:  Prediccion tipo de vehículo en incidentes nocturnos
+data_rf_3 <- subset(data_completa, g_hora_5 ==3 & tipo_veh!=99)
+
+
+data_rf_3<-data_rf_3[,c("tipo_veh","tipo_eve","hora_ocu","color_veh","depto_ocu")]
+
+data_rf_3$tipo_veh<-as.factor(data_rf_3$tipo_veh)
+data_rf_3<-na.omit(data_rf_3)
+set.seed(100)
+
+
+data_rf_3<-data_rf_3[sample(1:nrow(data_rf_3)),]
+index_3 <- sample(1:nrow(data_rf_3), 0.90*nrow(data_rf_3))
+train_3<- data_rf_3[index_3,]
+test_3<-data_rf_3[-index_3,]
+
+
+bosque_3 <- randomForest(tipo_veh ~ 
+                           tipo_eve +
+                           hora_ocu+
+                           color_veh +
+                           depto_ocu,
+                         data = train_3, 
+                         ntree = 500,
+                         mtry = 4
+)
+
+prueba_3 <- predict(bosque_3,test_3) 
+matriz_3 <- table(test_3$tipo_veh,prueba_3)
+
+#  Verificamos que tan preciso es el arbol
+pre_3 <- sum(diag(matriz_3))/sum(matriz_3)
+pre_3
+
+#  Creamos un datafram epara predceir su valor
+persona_rf_3 <- data.frame( 
+  tipo_eve = c(8),     # 8--> Encunetado
+  hora_ocu = c(22) ,   
+  color_veh = c(5),    # 5-->  Color Negro
+  depto_ocu = c(1)     # 1--> Guatemala
+)
+
+#  Predecimos los valores
+result_rf_3<- predict(bosque_3,persona_rf_3,type="prob")
+result_rf_3
+
+
+#  Grafica
+plot(bosque_3 ,main='Prediccion tipo de vehículo en incidentes nocturnos') 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#Predicción 4:  Hechos de tránsito relacionados según el color del vehículo (Claro, oscuro, vivo, otros).
+data_rf_4 <- subset(data_completa, color_veh <=17 & (hora_ocu >= 0 & hora_ocu <= 24))
+
+
+data_rf_4<-data_rf_4[,c("grupo_color","tipo_eve","hora_ocu","marca_veh","depto_ocu","dia_sem_ocu","modelo_veh")]
+
+data_rf_4$grupo_color<-as.factor(data_rf_4$grupo_color)
+data_rf_4<-na.omit(data_rf_4)
+set.seed(100)
+
+
+data_rf_4<-data_rf_4[sample(1:nrow(data_rf_4)),]
+index_4 <- sample(1:nrow(data_rf_4), 0.90*nrow(data_rf_4))
+train_4<- data_rf_4[index_4,]
+test_4<-data_rf_4[-index_4,]
+
+
+bosque_4 <- randomForest(grupo_color ~ 
+                           tipo_eve +
+                           hora_ocu+
+                           marca_veh+
+                           depto_ocu +
+                           dia_sem_ocu +
+                           modelo_veh,
+                         data = train_4, 
+                         ntree = 500,
+                         mtry = 4
+)
+
+prueba_4 <- predict(bosque_4,test_4) 
+matriz_4 <- table(test_4$grupo_color,prueba_4)
+
+#  Verificamos que tan preciso es el arbol
+pre_4 <- sum(diag(matriz_4))/sum(matriz_4)
+pre_4
+
+#  Creamos un datafram epara predceir su valor
+persona_rf_4 <- data.frame( 
+  tipo_eve = c(1),      # 1--> Colision
+  hora_ocu = c(17) ,   
+  marca_veh = c(56),    # 56-->  Marca Nissan
+  depto_ocu = c(1),     # 1--> Guatemala
+  dia_sem_ocu = c(1),   # 5--> Viernes
+  modelo_veh = c(2020)     
+)
+
+#  Predecimos los valores
+result_rf_4<- predict(bosque_4,persona_rf_4,type="prob")
+result_rf_4
+
+
+#  Grafica
+plot(bosque_4 ,main='Predicción de hechos de tránsito según grupo de color del vehículo') 
