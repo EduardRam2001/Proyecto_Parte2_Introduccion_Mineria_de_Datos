@@ -1,0 +1,2 @@
+# Proyecto_Parte2_Introduccion_Mineria_de_Datos
+Elaboracion de modelos predictivos
