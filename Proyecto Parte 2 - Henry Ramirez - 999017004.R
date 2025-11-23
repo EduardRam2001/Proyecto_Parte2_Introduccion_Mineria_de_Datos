@@ -233,7 +233,132 @@ rm(data_2024, data_2023, data_2022, data_2021, data_2020,data_2019, data_2018, d
 
 
 
+#---------------------------------------------------------------------------
+#-------------PREDICCÓN POR MEDIO DE ARBOLES DE DESICIÓN--------------------
+#---------------------------------------------------------------------------
 
+# Nota general:
+# 1. Cada predicción (Predicción 1, ..., Predicción 5) está separado y puede ejecutarse de forma individual.
+#    Esto permite visualizar y analizar los resultados de cada patrón por separado.
+
+
+
+#Predicción 1: Modelos de vehículo más afectados en horas pico – Guatemala 
+data_arbol_1 <- subset(data_completa, depto_ocu==1 & ((hora_ocu >= 5 & hora_ocu <= 9) | (hora_ocu >= 16 & hora_ocu <= 20)) & g_modelo_veh!=99)
+
+
+arbol_1 <- rpart(g_modelo_veh~ 
+                   color_veh +
+                   tipo_veh +
+                   hora_ocu +
+                   tipo_eve,
+                   data = data_arbol_1, method = 'class'
+)
+
+rpart.plot(arbol_1, type = 2 , extra=0 , under = TRUE , fallen.leaves = TRUE, box.palette = 'BuGn',
+           main='Modelos de vehículo más afectados en hora pico – Guatemala', cex=0.5)
+
+
+persona_arb_1 <- data.frame(
+  color_veh = c(2),    # 2--> blanco
+  tipo_veh = c(1) ,    # 1 --> Automóvil
+  hora_ocu = c(6) ,    # 6 de la tarde
+  tipo_eve = c(2)      # 2--> Choque
+)
+
+result_arb_1 <- predict(arbol_1, persona_arb_1, type='prob')
+result_arb_1
+
+
+
+
+
+#Predicción 2: Clasificación de hechos de tránsito en colisión y no colisión (motocicletas)
+data_arbol_2 <- subset(data_completa, tipo_veh==4  & depto_ocu<=22)
+
+
+data_arbol_2$colision = ifelse(data_arbol_2$tipo_eve == 1, 1, 0) #Se crea una columna si el evento es colision es 1 si no es entonces es 0
+
+arbol_2 <- rpart(colision~ 
+                   color_veh +
+                   hora_ocu +
+                   g_modelo_veh,
+                 data = data_arbol_2, method = 'class'
+)
+
+
+rpart.plot(arbol_2, type = 2 , extra=0 , under = TRUE , fallen.leaves = TRUE, box.palette = 'BuGn',
+           main='Clasificación de Incidentes: Colisión y No Colisión (Motocicletas)', cex=0.5)
+
+persona_arb_2 <- data.frame(
+  color_veh = c(3),     # 2--> Azul
+  hora_ocu = c(20) ,    
+  g_modelo_veh = c(5)   # 5--> Modelo 2010-2019
+)
+
+result_arb_2 <- predict(arbol_2, persona_arb_2, type='prob')
+result_arb_2
+
+
+
+
+
+#Predicción 3: Tipo de vehículo más involucrado en zonas activas – Guatemala
+data_arbol_3 <- subset(data_completa, (zona_ocu %in% c(4,10,15,1) & dia_sem_ocu %in% c(6,7)) & depto_ocu==1 & tipo_veh!=99)
+
+arbol_3 <- rpart(tipo_veh ~ 
+                   color_veh +
+                   hora_ocu +
+                   g_modelo_veh + 
+                   tipo_eve+
+                   marca_veh,
+                 data = data_arbol_3, method = 'class'
+)
+
+rpart.plot(arbol_3, type = 2 , extra=0 , under = TRUE , fallen.leaves = TRUE, box.palette = 'BuGn',
+           main='Tipo de vehículo más involucrado en zonas activas (1,4,10,15) – Guatemala', cex=0.5)
+
+
+persona_arb_3 <- data.frame(
+  color_veh = c(5),     # 5--> Negro
+  hora_ocu = c(22) ,    # 20 ---> 10 de la noche
+  g_modelo_veh = c(6),  # 6--> Modelo 2020-2029
+  tipo_eve = c(3),      # 3--> vuelco
+  marca_veh = c(27)     # 27--> Honda
+)
+
+result_arb_3 <- predict(arbol_3, persona_arb_3, type='prob')
+result_arb_3
+
+
+
+
+
+
+#Predicción 4: Incidentes de atropello en el departamento de Guatemala'.
+data_arbol_4 <- subset(data_completa, tipo_eve == 5  & depto_ocu <=22 & (modelo_veh >= 1970 & modelo_veh <= 2030))
+
+
+data_arbol_4$depto_region = ifelse(data_arbol_4$depto_ocu == 1, 1, 0) #Se crea una columna si el evento fue en el depto. Guatemala 1 y si fue departamental 0       
+                      
+arbol_4 <- rpart(depto_region ~ 
+                   color_veh +
+                   modelo_veh +
+                   marca_veh,
+                 data = data_arbol_4, method = 'class'
+)
+
+rpart.plot(arbol_4, type = 2 , extra=0 , under = TRUE , fallen.leaves = TRUE, box.palette = 'BuGn',
+           main='Incidentes de atropello en el departamento de Guatemala', cex=0.5)
+
+persona_arb_4 <- data.frame(
+  color_veh = c(1),     # 5--> Rojo
+  modelo_veh = c(2010) ,    
+  marca_veh = c(8)      # 8--> Marca BMW
+)
+
+result_arb_4 <- predict(arbol_4, persona_arb_4, type='prob')
+result_arb_4
 
 
 
