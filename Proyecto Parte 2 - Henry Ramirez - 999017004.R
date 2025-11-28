@@ -3,7 +3,7 @@
 #install.packages('rpart')
 #install.packages('rpart.plot')
 #install.packages("randomForest")
-#install.packages("ggalt")
+#install.packages(dplyr)
 
 
 
@@ -243,7 +243,7 @@ rm(data_2024, data_2023, data_2022, data_2021, data_2020,data_2019, data_2018, d
 
 
 
-#Predicción 1: Modelos de vehículo más afectados en horas pico – Guatemala 
+#Predicción 1: Modelos de vehículos más afectado en las horas pico en el departamento de Guatemala
 data_arbol_1 <- subset(data_completa, depto_ocu==1 & ((hora_ocu >= 5 & hora_ocu <= 9) | (hora_ocu >= 16 & hora_ocu <= 20)) & g_modelo_veh!=99)
 
 
@@ -273,7 +273,7 @@ result_arb_1
 
 
 
-#Predicción 2: Clasificación de hechos de tránsito en colisión y no colisión (motocicletas)
+#Predicción 2: Clasificación de hecho de tránsito (colisión y no colisión) para motocicletas
 data_arbol_2 <- subset(data_completa, tipo_veh==4  & depto_ocu<=22)
 
 
@@ -291,7 +291,7 @@ rpart.plot(arbol_2, type = 2 , extra=0 , under = TRUE , fallen.leaves = TRUE, bo
            main='Clasificación de Incidentes: Colisión y No Colisión (Motocicletas)', cex=0.5)
 
 persona_arb_2 <- data.frame(
-  color_veh = c(3),     # 2--> Azul
+  color_veh = c(2),     # 2--> Azul
   hora_ocu = c(20) ,    
   g_modelo_veh = c(5)   # 5--> Modelo 2010-2019
 )
@@ -303,7 +303,7 @@ result_arb_2
 
 
 
-#Predicción 3: Tipo de vehículo más involucrado en zonas activas – Guatemala
+#Predicción 3: Clasificación de incidentes de tipo atropello según su ocurrencia: dentro o fuera del departamento de Guatemala
 data_arbol_3 <- subset(data_completa, (zona_ocu %in% c(4,10,15,1) & dia_sem_ocu %in% c(6,7)) & depto_ocu==1 & tipo_veh!=99)
 
 arbol_3 <- rpart(tipo_veh ~ 
@@ -335,7 +335,7 @@ result_arb_3
 
 
 
-#Predicción 4: Incidentes de atropello en el departamento de Guatemala'.
+#Predicción 4: Clasificación de incidentes de tipo atropello según su ocurrencia: dentro o fuera del departamento de Guatemala
 data_arbol_4 <- subset(data_completa, tipo_eve == 5  & depto_ocu <=22 & (modelo_veh >= 1970 & modelo_veh <= 2030))
 
 
@@ -349,10 +349,10 @@ arbol_4 <- rpart(depto_region ~
 )
 
 rpart.plot(arbol_4, type = 2 , extra=0 , under = TRUE , fallen.leaves = TRUE, box.palette = 'BuGn',
-           main='Incidentes de atropello en el departamento de Guatemala', cex=0.5)
+           main='Predicción de atropellos dentro y fuera del departamento de Guatemala', cex=0.5)
 
 persona_arb_4 <- data.frame(
-  color_veh = c(1),     # 5--> Rojo
+  color_veh = c(5),     # 5--> Negro
   modelo_veh = c(2010) ,    
   marca_veh = c(8)      # 8--> Marca BMW
 )
@@ -416,7 +416,7 @@ matriz_1 <- table(test_1$depto_region,prueba_1)
 pre_1 <- sum(diag(matriz_1))/sum(matriz_1)
 pre_1
 
-#  Creamos un datafram epara predceir su valor
+#  Creamos un datafram epara predecir su valor
 persona_rf_1 <- data.frame( 
   hora_ocu = c(12),     
   marca_veh = c(69) ,   # 69--> Marca Toyota 
@@ -478,7 +478,7 @@ matriz_2 <- table(test_2$tipo_eve,prueba_2)
 pre_2 <- sum(diag(matriz_2))/sum(matriz_2)
 pre_2
 
-#  Creamos un datafram epara predceir su valor
+#  Creamos un datafram epara predecir su valor
 persona_rf_2 <- data.frame( 
   hora_ocu = c(20),     
   marca_veh = c(28) ,   # 69--> Marca Hyundai 
@@ -541,7 +541,7 @@ matriz_3 <- table(test_3$tipo_veh,prueba_3)
 pre_3 <- sum(diag(matriz_3))/sum(matriz_3)
 pre_3
 
-#  Creamos un datafram epara predceir su valor
+#  Creamos un datafram epara predecir su valor
 persona_rf_3 <- data.frame( 
   tipo_eve = c(8),     # 8--> Encunetado
   hora_ocu = c(22) ,   
@@ -610,7 +610,7 @@ matriz_4 <- table(test_4$grupo_color,prueba_4)
 pre_4 <- sum(diag(matriz_4))/sum(matriz_4)
 pre_4
 
-#  Creamos un datafram epara predceir su valor
+#  Creamos un datafram epara predecir su valor
 persona_rf_4 <- data.frame( 
   tipo_eve = c(1),      # 1--> Colision
   hora_ocu = c(17) ,   
