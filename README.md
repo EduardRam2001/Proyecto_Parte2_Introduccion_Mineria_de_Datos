@@ -90,8 +90,8 @@ install.packages("nombre_libreria")
 
 4. **Ejecutar los scripts de análisis de forma secuencial**  
    - Ejecutar el bloque **LIMPIEZA DE DATOS** (líneas 37 a 231), que incluye la lectura de todos los archivos (2009-2024), la unificación de las columnas y la creación del dataframe final.
-   - Ejecutar el bloque **PREDICCÓN POR MEDIO DE ARBOLES DE DECISIÓN**, donde cada predicción (Predicción 1, Predicción 2, ..., Predicción 4) se ejecuta de forma independiente para generar sus resultados.  
-   - Ejecutar el bloque **PREDICCÓN POR MEDIO DE ARBOLES DE DECISIÓN**, donde cada predicción (Predicción 1, Predicción 2, ..., Predicción 4) se ejecuta de forma independiente para generar sus resultados.    
+   - Ejecutar el bloque **PREDICCIÓN POR MEDIO DE ARBOLES DE DECISIÓN**, donde cada predicción (Predicción 1, Predicción 2, ..., Predicción 4) se ejecuta de forma independiente para generar sus resultados.  
+   - Ejecutar el bloque **PREDICCIÓN POR MEDIO DE ARBOLES DE DECISIÓN**, donde cada predicción (Predicción 1, Predicción 2, ..., Predicción 4) se ejecuta de forma independiente para generar sus resultados.    
 
 
 
