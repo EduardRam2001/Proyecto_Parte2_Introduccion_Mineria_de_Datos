@@ -151,25 +151,26 @@ install.packages("nombre_libreria")
 Antes de ejecutar el script, verifica que la variable `ruta` apunte a la carpeta donde están los 16 archivos .xlsx.
 Modifícala según la ubicación en tu equipo:
 
-```r
+```python
 # Ejemplo de ruta (modificar según tu equipo)
-ruta = "C:\\Users\\hedua\\OneDrive\\Escritorio\\MAESTRIA\\4to Trimestre\\INTRO. MINERIA DE DATOS\\Proyecto_Parte2_Introduccion_Mineria_de_Datos\\DATA\\"
+ruta = "/content/drive/MyDrive/MAESTRIA/4to Trimestre/INTRO. MINERIA DE DATOS/Proyecto_Parte2_Introduccion_Mineria_de_Datos/DATA/"
 ```
 
 ---
 
 ## Librerías necesarias
 
-Para ejecutar los scripts se utilizaron las siguientes librerías de R:
+Para ejecutar los scripts se utilizaron las siguientes librerías de python:
 
 ```r
-import pandas as pd      # Manipulación y análisis de datos
-```
+import numpy as np          # Operaciones numéricas y manejo de arreglos
+import pandas as pd         # Lectura, limpieza y manipulación de datos
+import tensorflow as tf     # Librería para construir y entrenar redes neuronales
 
-Para instalar estas librerías, usar el comando:
-```r
-pip install openpyxl    #Es la librería que pandas usa internamente para leer y escribir archivos .xlsx.
-pip install pandas      
+from tensorflow.keras.models import Sequential  # Modelo secuencial para redes neuronales
+from tensorflow.keras.layers import Dense       # Capas densas totalmente conectadas
+
+from sklearn.model_selection import train_test_split  # División del dataset en entrenamiento y prueba
 ```
 
 
@@ -189,13 +190,13 @@ pip install pandas
 3. **Definir la variable de ruta**  
    - Definir la variable `ruta` apuntando a la carpeta `DATA` en tu equipo.  
    - Ejemplo:  
-     ```r
-     ruta = "C:\\Users\\hedua\\OneDrive\\Escritorio\\MAESTRIA\\4to Trimestre\\INTRO. MINERIA DE DATOS\\Proyecto_Parte2_Introduccion_Mineria_de_Datos\\DATA\\"
+     ```python
+     ruta = "/content/drive/MyDrive/MAESTRIA/4to Trimestre/INTRO. MINERIA DE DATOS/Proyecto_Parte2_Introduccion_Mineria_de_Datos/DATA/"
      ```
 
 4. **Ejecutar los scripts de análisis de forma secuencial**  
-   - Ejecutar el bloque **LIMPIEZA DE DATOS** (líneas 37 a 231), que incluye la lectura de todos los archivos (2009-2024), la unificación de las columnas y la creación del dataframe final.
-   - Ejecutar los subloques de **PREDICCIÓN POR REDES NEURONALES**, donde cada predicción (Predicción 1, Predicción 2, ..., Predicción 4) se ejecuta de forma independiente para generar sus resultados.  
+   - Ejecutar todas las celdas contenidas en la sección  **LIMPIEZA DE DATOS** donde se realiza la lectura de los archivos históricos (2009–2024), la homologación de columnas y la construcción del dataframe unificado utilizado en los modelos posteriores.
+   - Dentro de la sección **PREDICCIÓN POR REDES NEURONALES**, donde cada predicción (Red Neuronal 1,  ..., Red Neuronal 4) se ejecuta de forma independiente para generar sus resultados.  
   
    
 ---
@@ -223,6 +224,7 @@ pip install pandas
 ---
 ## Requisitos técnicos
 
-- Python 3.9.12
+- Python: 3.9 o superior
+- Entorno de ejecución: Jupyter Notebook, JupyterLab o Google Colab
 - Carpeta `DATA` con los archivos en formato Excel.
 - Librerías instaladas según lo indicado.
