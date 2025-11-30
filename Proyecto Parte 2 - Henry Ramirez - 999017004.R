@@ -303,7 +303,7 @@ result_arb_2
 
 
 
-#Predicción 3: Clasificación de incidentes de tipo atropello según su ocurrencia: dentro o fuera del departamento de Guatemala
+#Predicción 3: Tipos de vehículos en hechos de tránsito en zonas activas en el departamento de Guatemala
 data_arbol_3 <- subset(data_completa, (zona_ocu %in% c(4,10,15,1) & dia_sem_ocu %in% c(6,7)) & depto_ocu==1 & tipo_veh!=99)
 
 arbol_3 <- rpart(tipo_veh ~ 
